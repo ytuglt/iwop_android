@@ -2,11 +2,12 @@ package com.xunneng.iwop
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
-import android.view.View
+import android.view.KeyEvent
 import android.webkit.JavascriptInterface
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
@@ -20,6 +21,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
+import android.content.Intent
+import android.net.Uri
+
 
 class MainActivity : AppCompatActivity() {
     // 语音听写对象
@@ -55,16 +59,32 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initWebView() {
-        webview.settings.javaScriptEnabled = true
-        webview.settings.domStorageEnabled = true
         webview.addJavascriptInterface(this, "obj")
         webview.loadUrl(url)
         webview.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest?): Boolean {
-                view.loadUrl(url)
-                return true
+            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                super.onPageStarted(view, url, favicon)
+                Log.d(TAG, "onPageStarted: ")
+            }
+
+            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+                Log.d(TAG, "shouldOverrideUrlLoading: ")
+                return super.shouldOverrideUrlLoading(view, request)
+            }
+
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                Log.d(TAG, "onPageFinished: ")
             }
         }
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK && webview.canGoBack()) {
+            webview.goBack()
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
     }
 
     @JavascriptInterface

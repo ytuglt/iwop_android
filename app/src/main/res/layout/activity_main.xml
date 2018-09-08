@@ -25,10 +25,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <WebView
+    <com.xunneng.iwop.widget.ProgressWebView
         android:id="@+id/webview"
         android:scrollbars="vertical"
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
