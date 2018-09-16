@@ -22,13 +22,12 @@ import com.baidu.aip.asrwakeup3.core.recog.MyRecognizer
 import com.baidu.aip.asrwakeup3.core.recog.listener.MessageStatusRecogListener
 import com.baidu.aip.asrwakeup3.uiasr.params.CommonRecogParams
 import com.baidu.aip.asrwakeup3.uiasr.params.OnlineRecogParams
-import com.xunneng.iwop.recognize.RecogHelper
 import kotlinx.android.synthetic.main.activity_main.*
 
 
 open class MainActivity : AppCompatActivity() {
 
-    private var mRecogHelper: RecogHelper? = null
+    //    private var mRecogHelper: RecogHelper? = null
     private lateinit var apiParams: CommonRecogParams
 
     /**
@@ -48,25 +47,26 @@ open class MainActivity : AppCompatActivity() {
     }
 
     private fun initRecog() {
-        mRecogHelper = RecogHelper.getInstance(webview)
-        mRecogHelper?.init(this)
+//        mRecogHelper = RecogHelper.getInstance(webview)
+//        mRecogHelper?.init(this)
 
         // DEMO集成步骤 1.1 新建一个回调类，识别引擎会回调这个类告知重要状态和识别结果
         val listener = MessageStatusRecogListener(@SuppressLint("HandlerLeak")
         object : Handler() {
             override fun handleMessage(msg: Message?) {
                 super.handleMessage(msg)
-                handleMsg(msg)
+                Log.d(TAG, "handleMessage: ${msg?.obj?.toString()}, status=${msg?.arg1}")
+            }
+        }, object :Handler(){
+            override fun handleMessage(msg: Message?) {
+                super.handleMessage(msg)
+                handleResultMsg(msg)
             }
         })
         // DEMO集成步骤 1.2 初始化：new一个IRecogListener示例 & new 一个 MyRecognizer 示例
         myRecognizer = MyRecognizer(this, listener)
         apiParams = OnlineRecogParams()
 
-    }
-
-    protected fun handleMsg(msg: Message?) {
-        Log.d(TAG, "handleMsg: ${msg?.obj?.toString()}")
     }
 
     private fun initTitle() {
@@ -105,13 +105,6 @@ open class MainActivity : AppCompatActivity() {
         return super.onKeyDown(keyCode, event)
     }
 
-    @JavascriptInterface
-    fun startRecognize(arg: String) {
-        runOnUiThread {
-            mRecogHelper?.startRecognize(arg)
-        }
-    }
-
     private fun requestPermissions() {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -128,12 +121,19 @@ open class MainActivity : AppCompatActivity() {
 
     }
 
-    /**
-     * 开始录音，点击“开始”按钮后调用。
-     */
-    @JavascriptInterface
-    fun start() {
-        Log.d(TAG, "start: ")
+
+    private fun setLongRecog(isLong: Boolean) {
+        val sp = PreferenceManager.getDefaultSharedPreferences(this)
+        val editor = sp.edit()
+        if (isLong) {
+            editor.putString("vad.endpoint-timeout", "0, 开启长语音（离线不支持）。建议pid选择15362。")
+        } else {
+            editor.putString("vad.endpoint-timeout", "")
+        }
+        editor.commit()
+    }
+
+    private fun start() {
         // DEMO集成步骤2.1 拼接识别参数： 此处params可以打印出来，直接写到你的代码里去，最终的json一致即可。
         val params = fetchParams()
         // params 也可以根据文档此处手动修改，参数会以json的格式在界面和logcat日志中打印
@@ -164,12 +164,32 @@ open class MainActivity : AppCompatActivity() {
         //  集成时不需要上面的代码，只需要params参数。
         return apiParams.fetch(sp)
     }
+
+    @JavascriptInterface
+    fun shortRecogStart() {
+//        runOnUiThread {
+////            mRecogHelper?.startRecognize(arg)
+//        }
+        setLongRecog(false)
+        start()
+    }
+
+    /**
+     * 开始录音，点击“开始”按钮后调用。
+     */
+    @JavascriptInterface
+    fun startLongRecog() {
+        Log.d(TAG, "start: ")
+        setLongRecog(true)
+        start()
+    }
+
     /**
      * 开始录音后，手动点击“停止”按钮。
      * SDK会识别不会再识别停止后的录音。
      */
     @JavascriptInterface
-    fun stop() {
+    fun stopRecog() {
         Log.d(TAG, "stop: ")
         // DEMO集成步骤4 (可选） 停止录音
         myRecognizer.stop()
@@ -186,6 +206,15 @@ open class MainActivity : AppCompatActivity() {
         myRecognizer.cancel()
     }
 
+    protected fun handleResultMsg(msg: Message?) {
+        Log.d(TAG, "handleResultMsg: ${msg?.obj?.toString()}, status=${msg?.arg1}")
+        webview.loadUrl("javascript:recognizeResult('${msg?.obj?.toString()}')")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        myRecognizer?.release()
+    }
 
     companion object {
         private const val TAG = "MainActivity"

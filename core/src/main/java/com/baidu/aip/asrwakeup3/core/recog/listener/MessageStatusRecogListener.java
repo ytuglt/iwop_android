@@ -12,6 +12,7 @@ import com.baidu.speech.asr.SpeechConstant;
 
 public class MessageStatusRecogListener extends StatusRecogListener {
     private Handler handler;
+    private Handler resultHandler;
 
     private long speechEndTime = 0;
 
@@ -19,8 +20,9 @@ public class MessageStatusRecogListener extends StatusRecogListener {
 
     private static final String TAG = "MesStatusRecogListener";
 
-    public MessageStatusRecogListener(Handler handler) {
+    public MessageStatusRecogListener(Handler handler,Handler resultHandler) {
         this.handler = handler;
+        this.resultHandler = resultHandler;
     }
 
 
@@ -65,6 +67,10 @@ public class MessageStatusRecogListener extends StatusRecogListener {
         }
         speechEndTime = 0;
         sendMessage(message, status, true);
+        Message msg = Message.obtain();
+        msg.arg1 = status;
+        msg.obj = results[0];
+        resultHandler.sendMessage(msg);
     }
 
     @Override

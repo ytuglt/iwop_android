@@ -10,24 +10,36 @@
     </script>
 </head>
 <body>
-HTML 内容显示 <br/>
+识别结果 ：<br/>
 <h1>
-    <div id="content">内容显示</div>
+    <div id="content" style="font-size:80px">识别结果展示</div>
 </h1>
 <br/>
-<input type="button" value="点击开始语音识别"
-       onclick="window.obj.startRecognize('Incoming parameters')"/><br/>
+<input type="button" value="短语音识别开始" style="width:600px;height:140px;font-size:50px"
+       onclick="window.obj.shortRecogStart()"/><br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<input type="button" value="长语音识别开始" style="width:600px;height:140px;font-size:50px"
+       onclick="window.obj.startLongRecog()"/><br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<input type="button" value="长语音识别停止" style="width:600px;height:140px;font-size:50px"
+       onclick="window.obj.stopRecog()"/><br/>
 
 <br/>
-<input type="button" value="开始"
-       onclick="window.obj.start()"/><br/>
-
 <br/>
-<input type="button" value="停止"
-       onclick="window.obj.stop()"/><br/>
-
 <br/>
-<input type="button" value="取消"
-       onclick="window.obj.cancel()"/><br/>
+<br/>
+<br/>
+<!--<input type="button" value="取消" style="width:300px;height:140px;font-size:50px"
+       onclick="window.obj.cancel()"/><br/>-->
 </body>
 </html>
