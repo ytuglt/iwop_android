@@ -6,6 +6,7 @@
     function recognizeResult(arg){
         document.getElementById("content").innerHTML = ("<br>"+arg);
     }
+
     </script>
 </head>
 <body>
@@ -16,5 +17,17 @@ HTML 内容显示 <br/>
 <br/>
 <input type="button" value="点击开始语音识别"
        onclick="window.obj.startRecognize('Incoming parameters')"/><br/>
+
+<br/>
+<input type="button" value="开始"
+       onclick="window.obj.start()"/><br/>
+
+<br/>
+<input type="button" value="停止"
+       onclick="window.obj.stop()"/><br/>
+
+<br/>
+<input type="button" value="取消"
+       onclick="window.obj.cancel()"/><br/>
 </body>
 </html>
