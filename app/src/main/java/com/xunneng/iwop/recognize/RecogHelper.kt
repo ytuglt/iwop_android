@@ -80,8 +80,8 @@ class RecogHelper(var webview: WebView) {
         mIat.setParameter(SpeechConstant.ASR_AUDIO_PATH, Environment.getExternalStorageDirectory().toString() + "/msc/iat.wav")
     }
 
-    fun startRecognize(arg: String) {
-            Log.d(TAG, "localMethods: arg = $arg")
+    fun startRecognize() {
+            Log.d(TAG, "localMethods:")
             setParam()
             // 不显示听写对话框
             var ret = mIat.startListening(mRecognizerListener)

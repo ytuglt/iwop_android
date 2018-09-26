@@ -22,12 +22,13 @@ import com.baidu.aip.asrwakeup3.core.recog.MyRecognizer
 import com.baidu.aip.asrwakeup3.core.recog.listener.MessageStatusRecogListener
 import com.baidu.aip.asrwakeup3.uiasr.params.CommonRecogParams
 import com.baidu.aip.asrwakeup3.uiasr.params.OnlineRecogParams
+import com.xunneng.iwop.recognize.RecogHelper
 import kotlinx.android.synthetic.main.activity_main.*
 
 
 open class MainActivity : AppCompatActivity() {
 
-    //    private var mRecogHelper: RecogHelper? = null
+        private var mRecogHelper: RecogHelper? = null
     private lateinit var apiParams: CommonRecogParams
 
     /**
@@ -47,8 +48,8 @@ open class MainActivity : AppCompatActivity() {
     }
 
     private fun initRecog() {
-//        mRecogHelper = RecogHelper.getInstance(webview)
-//        mRecogHelper?.init(this)
+        mRecogHelper = RecogHelper.getInstance(webview)
+        mRecogHelper?.init(this)
 
         // DEMO集成步骤 1.1 新建一个回调类，识别引擎会回调这个类告知重要状态和识别结果
         val listener = MessageStatusRecogListener(@SuppressLint("HandlerLeak")
@@ -167,11 +168,11 @@ open class MainActivity : AppCompatActivity() {
 
     @JavascriptInterface
     fun shortRecogStart() {
-//        runOnUiThread {
-////            mRecogHelper?.startRecognize(arg)
-//        }
-        setLongRecog(false)
-        start()
+        runOnUiThread {
+            mRecogHelper?.startRecognize()
+        }
+//        setLongRecog(false)
+//        start()
     }
 
     /**
