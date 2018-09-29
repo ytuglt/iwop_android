@@ -23,12 +23,13 @@ import com.baidu.aip.asrwakeup3.core.recog.listener.MessageStatusRecogListener
 import com.baidu.aip.asrwakeup3.uiasr.params.CommonRecogParams
 import com.baidu.aip.asrwakeup3.uiasr.params.OnlineRecogParams
 import com.xunneng.iwop.recognize.RecogHelper
+import com.xunneng.iwop.recognize.TtsHelper
 import kotlinx.android.synthetic.main.activity_main.*
 
 
 open class MainActivity : AppCompatActivity() {
 
-        private var mRecogHelper: RecogHelper? = null
+    private var mRecogHelper: RecogHelper? = null
     private lateinit var apiParams: CommonRecogParams
 
     /**
@@ -45,6 +46,11 @@ open class MainActivity : AppCompatActivity() {
         initTitle()
         initWebView()
         initRecog()
+        initTts()
+    }
+
+    private fun initTts() {
+        TtsHelper.get().init(this)
     }
 
     private fun initRecog() {
@@ -58,7 +64,8 @@ open class MainActivity : AppCompatActivity() {
                 super.handleMessage(msg)
                 Log.d(TAG, "handleMessage: ${msg?.obj?.toString()}, status=${msg?.arg1}")
             }
-        }, object :Handler(){
+        }, @SuppressLint("HandlerLeak")
+        object : Handler() {
             override fun handleMessage(msg: Message?) {
                 super.handleMessage(msg)
                 handleResultMsg(msg)
@@ -214,10 +221,33 @@ open class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        TtsHelper.get().destroy()
         myRecognizer?.release()
     }
 
     companion object {
         private const val TAG = "MainActivity"
     }
+
+    @JavascriptInterface
+    fun startTtsPlay(text: String) {
+        Log.d(TAG, "startTtsPlay: $text")
+        TtsHelper.get().startTtsPlay(text)
+    }
+
+    @JavascriptInterface
+    fun cancelTtsPlay() {
+        TtsHelper.get().cancelTtsPlay()
+    }
+
+    @JavascriptInterface
+    fun pauseTtsPlay() {
+        TtsHelper.get().pauseTtsPlay()
+    }
+
+    @JavascriptInterface
+    fun resumeTtsPlay() {
+        TtsHelper.get().resumeTtsPlay()
+    }
+
 }
