@@ -25,6 +25,7 @@ import com.baidu.aip.asrwakeup3.uiasr.params.OnlineRecogParams
 import com.xunneng.iwop.recognize.LongRecogHelper
 import com.xunneng.iwop.recognize.RecogHelper
 import com.xunneng.iwop.recognize.TtsHelper
+import com.xunneng.iwop.recognize.WakeUpHelper
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -32,6 +33,7 @@ open class MainActivity : AppCompatActivity() {
 
     private var mRecogHelper: RecogHelper? = null
     private var mLongRecogHelper: LongRecogHelper? = null
+    private var mWakeUpHelper: WakeUpHelper? = null
 
     private var url = "file:///android_asset/web.html"
 
@@ -43,6 +45,11 @@ open class MainActivity : AppCompatActivity() {
         initWebView()
         initRecog()
         initTts()
+        initWakeUp()
+    }
+
+    private fun initWakeUp() {
+        WakeUpHelper.get().init(this, webview)
     }
 
     private fun initTts() {
@@ -149,16 +156,6 @@ open class MainActivity : AppCompatActivity() {
         mLongRecogHelper?.cancelLongRecog()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        TtsHelper.get().destroy()
-        mLongRecogHelper?.release()
-    }
-
-    companion object {
-        private const val TAG = "MainActivity"
-    }
-
     @JavascriptInterface
     fun startTtsPlay(text: String) {
         Log.d(TAG, "startTtsPlay: $text")
@@ -178,6 +175,27 @@ open class MainActivity : AppCompatActivity() {
     @JavascriptInterface
     fun resumeTtsPlay() {
         TtsHelper.get().resumeTtsPlay()
+    }
+
+    @JavascriptInterface
+    fun startWakeUp() {
+        WakeUpHelper.get().start()
+    }
+
+    @JavascriptInterface
+    fun stopWakeUp() {
+        WakeUpHelper.get().stop()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        TtsHelper.get().destroy()
+        mLongRecogHelper?.release()
+        WakeUpHelper.get().release()
+    }
+
+    companion object {
+        private const val TAG = "MainActivity"
     }
 
 }
