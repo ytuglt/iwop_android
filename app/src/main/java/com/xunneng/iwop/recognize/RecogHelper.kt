@@ -6,6 +6,7 @@ import android.os.Environment
 import android.util.Log
 import android.webkit.WebView
 import com.iflytek.cloud.*
+import com.xunneng.iwop.utils.FucUtil
 import com.xunneng.iwop.utils.JsonParser
 import org.json.JSONException
 import org.json.JSONObject
@@ -81,13 +82,13 @@ class RecogHelper(var webview: WebView) {
     }
 
     fun startRecognize() {
-            Log.d(TAG, "localMethods:")
-            setParam()
-            // 不显示听写对话框
-            var ret = mIat.startListening(mRecognizerListener)
-            if (ret != ErrorCode.SUCCESS) {
-                Log.d(TAG, "startRecognize: 听写失败,错误码：$ret")
-            }
+        Log.d(TAG, "localMethods:")
+        setParam()
+        // 不显示听写对话框
+        var ret = mIat.startListening(mRecognizerListener)
+        if (ret != ErrorCode.SUCCESS) {
+            Log.d(TAG, "startRecognize: 听写失败,错误码：$ret")
+        }
     }
 
 
@@ -163,6 +164,28 @@ class RecogHelper(var webview: WebView) {
         Log.d(TAG, "printResult: resultBuffer.toString() =  " + resultBuffer.toString())
         webview.loadUrl("javascript:recognizeResult('$textString')")
 
+    }
+
+    fun uploadUserWords(context: Context) {
+        val contents = FucUtil.readFile(context, "userwords", "utf-8")
+// 指定引擎类型
+        mIat.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD)
+        mIat.setParameter(SpeechConstant.TEXT_ENCODING, "utf-8")
+        var ret = mIat.updateLexicon("userword", contents, mLexiconListener)
+        if (ret != ErrorCode.SUCCESS)
+            Log.e(TAG,"上传热词失败,错误码：$ret")
+    }
+
+    /**
+     * 上传联系人/词表监听器。
+     */
+    private val mLexiconListener = LexiconListener { lexiconId, error ->
+        Log.d(TAG,"upload")
+        if (error != null) {
+            webview.loadUrl("javascript:uploadUserWordResult('${error.toString()}')")
+        } else {
+            webview.loadUrl("javascript:uploadUserWordResult('upload success')")
+        }
     }
 
 }

@@ -8,7 +8,13 @@
     }
 
     function hasWakeUp(){
-        document.getElementById("content").innerHTML = ("<br>"+‘已经唤醒’);
+        document.getElementById("content").innerHTML = ("<br>"+"已经唤醒");
+        window.obj.stopWakeUp()
+        window.obj.shortRecogStart()
+    }
+
+    function uploadUserWordResult(arg){
+        document.getElementById("content").innerHTML = ("<br>"+arg);
     }
 
     </script>
@@ -90,6 +96,15 @@
 <br/>
 <input type="button" value="停止唤醒" style="width:600px;height:140px;font-size:50px"
        onclick="window.obj.stopWakeUp()"/><br/>
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+
+<input type="button" value="上传词表" style="width:600px;height:140px;font-size:50px"
+       onclick="window.obj.uploadUserWords()"/><br/>
 
 <br/>
 <br/>

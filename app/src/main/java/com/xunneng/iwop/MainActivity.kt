@@ -187,6 +187,12 @@ open class MainActivity : AppCompatActivity() {
         WakeUpHelper.get().stop()
     }
 
+    @JavascriptInterface
+    fun uploadUserWords() {
+        mRecogHelper?.uploadUserWords(this)
+    }
+
+
     override fun onDestroy() {
         super.onDestroy()
         TtsHelper.get().destroy()
