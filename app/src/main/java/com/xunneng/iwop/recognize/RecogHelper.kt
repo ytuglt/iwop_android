@@ -6,6 +6,8 @@ import android.os.Environment
 import android.util.Log
 import android.webkit.WebView
 import com.iflytek.cloud.*
+import com.iflytek.cloud.ui.RecognizerDialog
+import com.iflytek.cloud.ui.RecognizerDialogListener
 import com.xunneng.iwop.utils.FucUtil
 import com.xunneng.iwop.utils.JsonParser
 import org.json.JSONException
@@ -19,6 +21,9 @@ class RecogHelper(var webview: WebView) {
     // 引擎类型
     private val mEngineType = SpeechConstant.TYPE_CLOUD
     private val mIatResults = LinkedHashMap<String, String>()
+
+    // 语音听写UI
+    private var mIatDialog: RecognizerDialog? = null
 
     companion object {
         private const val TAG = "RecogHelper"
@@ -40,6 +45,12 @@ class RecogHelper(var webview: WebView) {
             if (code != ErrorCode.SUCCESS) {
                 Log.e(TAG, "初始化失败，错误码：$code")
             }
+        }
+
+        // 初始化听写Dialog，如果只使用有UI听写功能，无需创建SpeechRecognizer
+        // 使用UI听写功能，请根据sdk文件目录下的notice.txt,放置布局文件和图片资源
+        mIatDialog = RecognizerDialog(context) {
+            Log.d(TAG, "Dialog init code $it")
         }
     }
 
@@ -84,10 +95,31 @@ class RecogHelper(var webview: WebView) {
     fun startRecognize() {
         Log.d(TAG, "localMethods:")
         setParam()
-        // 不显示听写对话框
-        var ret = mIat.startListening(mRecognizerListener)
-        if (ret != ErrorCode.SUCCESS) {
-            Log.d(TAG, "startRecognize: 听写失败,错误码：$ret")
+//        // 不显示听写对话框
+//        var ret = mIat.startListening(mRecognizerListener)
+//        if (ret != ErrorCode.SUCCESS) {
+//            Log.d(TAG, "startRecognize: 听写失败,错误码：$ret")
+//        }
+
+        // 显示听写对话框
+        mIatDialog?.setListener(mRecognizerDialogListener)
+        mIatDialog?.show()
+    }
+
+    /**
+     * 听写UI监听器
+     */
+    private val mRecognizerDialogListener = object : RecognizerDialogListener {
+        override fun onResult(results: RecognizerResult, isLast: Boolean) {
+            printResult(results)
+        }
+
+        /**
+         * 识别回调错误.
+         */
+        override fun onError(error: SpeechError) {
+//            showTip(error.getPlainDescription(true))
+            webview.loadUrl("javascript:recognizeResult('${error.getPlainDescription(true)}')")
         }
     }
 
@@ -173,14 +205,14 @@ class RecogHelper(var webview: WebView) {
         mIat.setParameter(SpeechConstant.TEXT_ENCODING, "utf-8")
         var ret = mIat.updateLexicon("userword", contents, mLexiconListener)
         if (ret != ErrorCode.SUCCESS)
-            Log.e(TAG,"上传热词失败,错误码：$ret")
+            Log.e(TAG, "上传热词失败,错误码：$ret")
     }
 
     /**
      * 上传联系人/词表监听器。
      */
     private val mLexiconListener = LexiconListener { lexiconId, error ->
-        Log.d(TAG,"upload")
+        Log.d(TAG, "upload")
         if (error != null) {
             webview.loadUrl("javascript:uploadUserWordResult('${error.toString()}')")
         } else {
