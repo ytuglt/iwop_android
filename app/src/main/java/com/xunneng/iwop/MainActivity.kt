@@ -11,10 +11,8 @@ import android.os.Message
 import android.preference.PreferenceManager
 import android.util.Log
 import android.view.KeyEvent
-import android.webkit.JavascriptInterface
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.baidu.aip.asrwakeup3.core.mini.AutoCheck
@@ -35,8 +33,9 @@ open class MainActivity : AppCompatActivity() {
     private var mLongRecogHelper: LongRecogHelper? = null
     private var mWakeUpHelper: WakeUpHelper? = null
 
-    private var url = "file:///android_asset/web.html"
+//    private var url = "file:///android_asset/iwop.html"
 
+    private var url = "http://39.105.87.211:8080/ioswebinit?u=/mhealthhomepage.do"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -72,6 +71,7 @@ open class MainActivity : AppCompatActivity() {
     }
 
     private fun initWebView() {
+        webview.settings.javaScriptEnabled  = true
         webview.addJavascriptInterface(this, "obj")
         webview.loadUrl(url)
         webview.webViewClient = object : WebViewClient() {
@@ -80,16 +80,24 @@ open class MainActivity : AppCompatActivity() {
                 Log.d(TAG, "onPageStarted: ")
             }
 
+            @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                 Log.d(TAG, "shouldOverrideUrlLoading: ")
-                return super.shouldOverrideUrlLoading(view, request)
+                //网页在webView中打开
+                if(Build.VERSION.SDK_INT <=  Build.VERSION_CODES.LOLLIPOP){//安卓5.0的加载方法
+                    view.loadUrl(request.toString())
+                }else {//5.0以上的加载方法
+                    view.loadUrl(request.url.toString())
+                }
+                return true
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
-                Log.d(TAG, "onPageFinished: ")
+                Log.d(TAG, "onPageFinished: url = $url")
             }
         }
+        webview.webChromeClient = WebChromeClient()
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
