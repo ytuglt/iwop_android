@@ -1,25 +1,16 @@
 package com.xunneng.iwop
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Message
-import android.preference.PreferenceManager
 import android.util.Log
 import android.view.KeyEvent
 import android.webkit.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.baidu.aip.asrwakeup3.core.mini.AutoCheck
-import com.baidu.aip.asrwakeup3.core.recog.MyRecognizer
-import com.baidu.aip.asrwakeup3.core.recog.listener.MessageStatusRecogListener
-import com.baidu.aip.asrwakeup3.uiasr.params.CommonRecogParams
-import com.baidu.aip.asrwakeup3.uiasr.params.OnlineRecogParams
 import com.xunneng.iwop.recognize.LongRecogHelper
 import com.xunneng.iwop.recognize.RecogHelper
 import com.xunneng.iwop.recognize.TtsHelper
@@ -33,9 +24,8 @@ open class MainActivity : AppCompatActivity() {
     private var mLongRecogHelper: LongRecogHelper? = null
     private var mWakeUpHelper: WakeUpHelper? = null
 
-//    private var url = "file:///android_asset/iwop.html"
+    private var url = "file:///android_asset/iwop.html"
 
-    private var url = "http://39.105.87.211:8080/ioswebinit?u=/mhealthhomepage.do"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -71,7 +61,7 @@ open class MainActivity : AppCompatActivity() {
     }
 
     private fun initWebView() {
-        webview.settings.javaScriptEnabled  = true
+        webview.settings.javaScriptEnabled = true
         webview.addJavascriptInterface(this, "obj")
         webview.loadUrl(url)
         webview.webViewClient = object : WebViewClient() {
@@ -84,9 +74,9 @@ open class MainActivity : AppCompatActivity() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                 Log.d(TAG, "shouldOverrideUrlLoading: ")
                 //网页在webView中打开
-                if(Build.VERSION.SDK_INT <=  Build.VERSION_CODES.LOLLIPOP){//安卓5.0的加载方法
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {//安卓5.0的加载方法
                     view.loadUrl(request.toString())
-                }else {//5.0以上的加载方法
+                } else {//5.0以上的加载方法
                     view.loadUrl(request.url.toString())
                 }
                 return true
