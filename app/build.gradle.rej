@@ -1,0 +1,9 @@
+diff a/app/build.gradle b/app/build.gradle	(rejected hunks)
+@@ -9,6 +9,7 @@
+     defaultConfig {
+         applicationId "com.xunneng.iwop"
+         minSdkVersion 19
++        targetSdkVersion 27
+         versionCode 1
+         versionName "1.0"
+         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
