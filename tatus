@@ -1,0 +1,55 @@
+[1mdiff --git a/.idea/misc.xml b/.idea/misc.xml[m
+[1mindex 51fa3e5..cc04cd3 100644[m
+[1m--- a/.idea/misc.xml[m
+[1m+++ b/.idea/misc.xml[m
+[36m@@ -35,7 +35,7 @@[m
+       </value>[m
+     </option>[m
+   </component>[m
+[31m-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" project-jdk-name="1.8" project-jdk-type="JavaSDK">[m
+[32m+[m[32m  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="1.8" project-jdk-type="JavaSDK">[m
+     <output url="file://$PROJECT_DIR$/build/classes" />[m
+   </component>[m
+   <component name="ProjectType">[m
+[1mdiff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml[m
+[1mindex 885100f..8a1fbaf 100644[m
+[1m--- a/app/src/main/AndroidManifest.xml[m
+[1m+++ b/app/src/main/AndroidManifest.xml[m
+[36m@@ -25,18 +25,32 @@[m
+         android:roundIcon="@mipmap/ic_launcher_round"[m
+         android:supportsRtl="true"[m
+         android:theme="@style/AppTheme"[m
+[31m-        tools:ignore="GoogleAppIndexingWarning"[m
+[31m-        android:usesCleartextTraffic="true">[m
+[32m+[m[32m        android:usesCleartextTraffic="true"[m
+[32m+[m[32m        tools:ignore="GoogleAppIndexingWarning">[m
+ [m
+[31m-        <uses-library android:name="org.apache.http.legacy" android:required="false" />[m
+[32m+[m[32m        <uses-library[m
+[32m+[m[32m            android:name="org.apache.http.legacy"[m
+[32m+[m[32m            android:required="false" />[m
+ [m
+[31m-        <activity android:name=".MainActivity"[m
+[32m+[m[32m        <activity[m
+[32m+[m[32m            android:name=".MainActivity"[m
+[32m+[m[32m            android:launchMode="singleTop"[m
+             android:windowSoftInputMode="stateVisible|adjustResize|adjustPan|stateAlwaysVisible">[m
+             <intent-filter>[m
+                 <action android:name="android.intent.action.MAIN" />[m
+[31m-[m
+                 <category android:name="android.intent.category.LAUNCHER" />[m
+             </intent-filter>[m
+[32m+[m
+[32m+[m[32m            <intent-filter>[m
+[32m+[m[32m                <action android:name="android.intent.action.VIEW" />[m
+[32m+[m
+[32m+[m[32m                <category android:name="android.intent.category.DEFAULT" />[m
+[32m+[m[32m                <category android:name="android.intent.category.BROWSABLE" />[m
+[32m+[m
+[32m+[m[32m                <data[m
+[32m+[m[32m                    android:host="xunneng.com"[m
+[32m+[m[32m                    android:scheme="iwop" />[m
+[32m+[m[32m            </intent-filter>[m
+         </activity>[m
+     </application>[m
+ [m
