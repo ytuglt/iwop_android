@@ -1,8 +1,11 @@
 package com.xunneng.iwop
 
 import android.Manifest
+import android.content.Intent
+import android.content.Intent.*
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -16,6 +19,7 @@ import com.xunneng.iwop.recognize.RecogHelper
 import com.xunneng.iwop.recognize.TtsHelper
 import com.xunneng.iwop.recognize.WakeUpHelper
 import kotlinx.android.synthetic.main.activity_main.*
+import java.net.URISyntaxException
 
 
 open class MainActivity : AppCompatActivity() {
@@ -24,7 +28,8 @@ open class MainActivity : AppCompatActivity() {
     private var mLongRecogHelper: LongRecogHelper? = null
     private var mWakeUpHelper: WakeUpHelper? = null
 
-    private var url = "file:///android_asset/iwop.html"
+//    private var url = "file:///android_asset/iwop.html"
+    private var url = "https://mmm.chengxinheyi.com/Plugin/wappay/pay.jsp"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,12 +78,56 @@ open class MainActivity : AppCompatActivity() {
             @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                 Log.d(TAG, "shouldOverrideUrlLoading: ")
+                val url: String
                 //网页在webView中打开
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {//安卓5.0的加载方法
-                    view.loadUrl(request.toString())
+                url = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {//安卓5.0的加载方法
+                    request.toString()
                 } else {//5.0以上的加载方法
-                    view.loadUrl(request.url.toString())
+                    request.url.toString()
                 }
+
+                try {
+                    //处理intent协议
+                    if (url.startsWith("intent://")) {
+                        val intent: Intent
+                        try {
+                            intent = parseUri(url, URI_INTENT_SCHEME)
+                            intent.addCategory("android.intent.category.BROWSABLE")
+                            intent.component = null
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+                                intent.setSelector(null)
+                            }
+                            val resolves = packageManager.queryIntentActivities(intent, 0)
+                            if (resolves.size > 0) {
+                                startActivityIfNeeded(intent, -1)
+                            }
+                            return true
+                        } catch (e: URISyntaxException) {
+                            e.printStackTrace()
+                        }
+
+                    }
+                    // 处理自定义scheme协议
+                    if (!url.startsWith("http")) {
+                        Log.d(TAG, "处理自定义scheme-->$url")
+                        try {
+                            // 以下固定写法
+                            val intent = Intent(ACTION_VIEW,
+                                    Uri.parse(url))
+                            intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_SINGLE_TOP
+                            startActivity(intent)
+                        } catch (e: Exception) {
+                            // 防止没有安装的情况
+                            e.printStackTrace()
+                        }
+                        return true
+                    }else{
+                        view.loadUrl(url)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
                 return true
             }
 
